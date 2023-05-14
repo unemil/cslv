@@ -1,0 +1,13 @@
+#root,
+#dropzone {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+#dropzone {
+  border: thin dashed;
+  margin-top: 20%;
+  margin-bottom: 20%;
+}
