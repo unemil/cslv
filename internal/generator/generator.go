@@ -39,6 +39,12 @@ func (s *service) Image() (base64Captcha.Item, error) {
 }
 
 func (s *service) Dataset() error {
+	annotations, err := os.Create("annotations.txt")
+	if err != nil {
+		return err
+	}
+	defer annotations.Close()
+
 	for i := 0; i < 10000; i++ {
 		id, content, answer := s.driver.GenerateIdQuestionAnswer()
 		image, err := s.driver.DrawCaptcha(content)
@@ -50,10 +56,13 @@ func (s *service) Dataset() error {
 		if err != nil {
 			return err
 		}
+		defer file.Close()
 
 		if _, err := image.WriteTo(file); err != nil {
 			return err
 		}
+
+		annotations.WriteString(fmt.Sprintf("images/%s.png %s\n", answer, answer))
 
 		log.Printf("%s: %s\n", id, answer)
 	}
