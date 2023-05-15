@@ -34,11 +34,6 @@ func New(config *Config, image Service, captcha Generator) *api {
 	r := router.New()
 
 	r.GET("/captcha", api.generate)
-	// r.Group("/api")
-	// {
-	// 	r.POST("/v1/captcha/solve", api.solve)
-	// }
-
 	r.POST("/api/v1/captcha/solve", api.solve)
 
 	r.ServeFiles("/{filepath:*}", "templates/ui/dist")
