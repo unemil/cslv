@@ -2,6 +2,7 @@ package image
 
 import (
 	"image"
+	"image/color"
 	"log"
 	"strings"
 
@@ -23,14 +24,16 @@ func (s *service) Solve(file []byte) string {
 	}
 
 	// Preprocessing
-	gocv.Resize(img, &img, image.Pt(img.Cols()*5, img.Rows()*5), 0, 0, gocv.InterpolationLinear)
+	gocv.Resize(img, &img, image.Pt(img.Cols()*5, img.Rows()*5), 0, 0, gocv.InterpolationDefault)
 	gocv.CvtColor(img, &img, gocv.ColorBGRToGray)
-	gocv.GaussianBlur(img, &img, image.Pt(3, 3), 0, 0, gocv.BorderDefault)
+	// gocv.DrawContours(&img, gocv.FindContours(img, gocv.RetrievalTree, gocv.ChainApproxSimple), 0, color.RGBA{R: 0, G: 0, B: 255, A: 0}, 10)
+	gocv.GaussianBlur(img, &img, image.Pt(5, 5), 0, 0, gocv.BorderDefault)
 
 	gocv.IMWrite("preprocessing.png", img)
 
 	// Segmentation
 	gocv.Threshold(img, &img, 0, 255, gocv.ThresholdBinary|gocv.ThresholdOtsu)
+	gocv.DrawContours(&img, gocv.FindContours(img, gocv.RetrievalTree, gocv.ChainApproxSimple), 0, color.RGBA{R: 0, G: 0, B: 255, A: 0}, 10)
 
 	gocv.IMWrite("segmentation.png", img)
 

@@ -12,12 +12,15 @@ import (
 )
 
 func main() {
+	generator := generator.New()
+	generator.Dataset()
+
 	api := api.New(&api.Config{
 		Host:         ":80",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		IdleTimeout:  10 * time.Second,
-	}, image.New(), generator.New())
+	}, image.New(), generator)
 
 	go func() {
 		if err := api.ListenAndServe(); err != nil {
