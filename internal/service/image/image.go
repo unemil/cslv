@@ -23,37 +23,45 @@ func (s *service) Solve(file []byte) string {
 	}
 
 	// Preprocessing
-	gocv.Resize(img, &img, image.Pt(img.Cols()*2, img.Rows()*2), 0, 0, gocv.InterpolationLinear)
-	gocv.CvtColor(img, &img, gocv.ColorBGRToGray)
-	gocv.BilateralFilter(img, &img, 5, 15, 15)
+	resize := gocv.NewMat()
+	gocv.Resize(img, &resize, image.Pt(img.Cols()*2, img.Rows()*2), 0, 0, gocv.InterpolationLinear)
 
-	gocv.IMWrite("preprocessing.png", img)
+	grayscale := gocv.NewMat()
+	gocv.CvtColor(resize, &grayscale, gocv.ColorBGRToGray)
+
+	filter := gocv.NewMat()
+	gocv.BilateralFilter(grayscale, &filter, 5, 15, 15)
+
+	// gocv.IMWrite("preprocessing.png", filter)
 
 	// Segmentation
-	// gocv.Threshold(img, &img, 0, 255, gocv.ThresholdBinary|gocv.ThresholdOtsu)
-	gocv.Canny(img, &img, 1, 100)
+	threshold := gocv.NewMat()
+	gocv.Threshold(filter, &threshold, 210, 255, gocv.ThresholdBinary)
 
-	gocv.IMWrite("segmentation.png", img)
+	// gocv.IMWrite("segmentation.png", threshold)
 
 	// Classification
 	client := gosseract.NewClient()
 	defer client.Close()
 
-	buffer, err := gocv.IMEncode(gocv.PNGFileExt, img)
+	buffer, err := gocv.IMEncode(gocv.PNGFileExt, threshold)
 	if err != nil {
+		log.Println(err)
 		return "gocv.IMEncode error"
 	}
 	defer buffer.Close()
 
 	if err := client.SetImageFromBytes(buffer.GetBytes()); err != nil {
+		log.Println(err)
 		return "client.SetImageFromBytes error"
 	}
 
-	client.SetLanguage("eng")
+	client.SetLanguage("WenQuanYiMicroHei", "ChromosomeHeavy", "DenneThreedee")
 	client.SetPageSegMode(gosseract.PSM_AUTO)
 
 	result, err := client.Text()
 	if err != nil {
+		log.Println(err)
 		return "client.Text error"
 	}
 
