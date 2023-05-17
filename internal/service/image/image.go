@@ -57,6 +57,7 @@ func (s *service) Solve(file []byte) (string, error) {
 	}
 
 	text = strings.ReplaceAll(strings.ReplaceAll(text, "  ", " "), " ", "")
+	text = strings.ToLower(text)
 
 	return text, nil
 }

@@ -28,11 +28,15 @@ func (g *generator) Image() (Captcha, error) {
 	g.driverString.Length = rand.Intn(2) + 4
 	g.driverString.NoiseCount = g.driverString.Length / 2
 
-	_, content, answer := g.driver.GenerateIdQuestionAnswer()
+	id, content, answer := g.driver.GenerateIdQuestionAnswer()
 	item, err := g.driver.DrawCaptcha(content)
 	if err != nil {
 		return Captcha{}, err
 	}
 
-	return Captcha{Item: item, Answer: answer}, nil
+	return Captcha{
+		ID:     id,
+		Item:   item,
+		Answer: answer,
+	}, nil
 }

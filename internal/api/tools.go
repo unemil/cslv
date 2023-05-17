@@ -22,6 +22,8 @@ func ok(ctx *fasthttp.RequestCtx, data any) {
 			return
 		}
 
+		log.Trace().Msg(string(body))
+
 		if _, err := ctx.Write(body); err != nil {
 			internalServerError(ctx, err)
 			return
@@ -39,13 +41,13 @@ func ok(ctx *fasthttp.RequestCtx, data any) {
 }
 
 func badRequest(ctx *fasthttp.RequestCtx, err error) {
-	log.Error().Msg(err.Error())
-
 	body, err := json.Marshal(result{Error: err.Error()})
 	if err != nil {
 		internalServerError(ctx, err)
 		return
 	}
+
+	log.Trace().Msg(string(body))
 
 	if _, err := ctx.Write(body); err != nil {
 		internalServerError(ctx, err)
@@ -56,13 +58,13 @@ func badRequest(ctx *fasthttp.RequestCtx, err error) {
 }
 
 func internalServerError(ctx *fasthttp.RequestCtx, err error) {
-	log.Error().Msg(err.Error())
-
 	body, err := json.Marshal(result{Error: err.Error()})
 	if err != nil {
 		internalServerError(ctx, err)
 		return
 	}
+
+	log.Trace().Msg(string(body))
 
 	if _, err := ctx.Write(body); err != nil {
 		internalServerError(ctx, err)
