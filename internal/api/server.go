@@ -1,10 +1,10 @@
 package api
 
 import (
-	"log"
 	"time"
 
 	"github.com/fasthttp/router"
+	"github.com/rs/zerolog/log"
 	"github.com/valyala/fasthttp"
 )
 
@@ -34,9 +34,16 @@ func New(config *Config, image Service, captcha Generator) *api {
 	r := router.New()
 
 	r.GET("/captcha", api.generate)
-	r.POST("/api/v1/captcha/solve", api.solve)
+
+	v1 := r.Group("/api/v1")
+	{
+		v1.POST("/captcha/solve", api.solve)
+	}
 
 	r.ServeFiles("/{filepath:*}", "templates/ui/dist")
+
+	r.ServeFiles("/swagger/{filepath:*}", "templates/swagger-ui/dist")
+	r.ServeFiles("/docs/{filepath:*}", "templates/swagger-ui")
 
 	api.router = r.Handler
 
@@ -52,12 +59,14 @@ func (api *api) ListenAndServe() error {
 		CloseOnShutdown: true,
 	}
 
-	log.Println(api.config.Host)
+	log.Info().Msgf("Starting http server on %s ...", api.config.Host)
 
 	return api.server.ListenAndServe(api.config.Host)
 }
 
 func (api *api) Shutdown() error {
+	log.Info().Msg("Stopping http server ...")
 	time.Sleep(1 * time.Second)
+
 	return api.server.Shutdown()
 }

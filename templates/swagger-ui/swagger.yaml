@@ -1,0 +1,41 @@
+swagger: '2.0'
+info:
+  title: cslv
+  version: '1.0.0'
+
+paths:
+  /api/v1/captcha/solve:
+    post:
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+            properties:
+              text:
+                type: string
+        400:
+          description: bad request
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+        500:
+          description: internal server error
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+      tags:
+        - /api/v1

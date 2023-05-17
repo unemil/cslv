@@ -19,8 +19,8 @@ const CaptchaSolve = () => {
           'Content-Type': 'multipart/form-data',
         }
       })
-      .then(response => { setResult(response.data) })
-      .catch(error => { console.error('error:', error.message) })
+      .then(response => { setResult(response.data.text) })
+      .catch(error => { setResult(error.response.data.error) })
   }
 
   const onDrop = useCallback((acceptedFiles) => {

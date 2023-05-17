@@ -2,7 +2,6 @@ package image
 
 import (
 	"image"
-	"log"
 	"strings"
 
 	"github.com/otiai10/gosseract/v2"
@@ -15,11 +14,10 @@ func New() *service {
 	return &service{}
 }
 
-func (s *service) Solve(file []byte) string {
+func (s *service) Solve(file []byte) (string, error) {
 	img, err := gocv.IMDecode(file, gocv.IMReadColor)
-	if err != nil || img.Empty() {
-		log.Println(err)
-		return "gocv.IMDecode error"
+	if err != nil {
+		return "", err
 	}
 
 	// Preprocessing
@@ -32,13 +30,9 @@ func (s *service) Solve(file []byte) string {
 	filter := gocv.NewMat()
 	gocv.BilateralFilter(grayscale, &filter, 5, 15, 15)
 
-	// gocv.IMWrite("preprocessing.png", filter)
-
 	// Segmentation
 	threshold := gocv.NewMat()
 	gocv.Threshold(filter, &threshold, 210, 255, gocv.ThresholdBinary)
-
-	// gocv.IMWrite("segmentation.png", threshold)
 
 	// Classification
 	client := gosseract.NewClient()
@@ -46,24 +40,23 @@ func (s *service) Solve(file []byte) string {
 
 	buffer, err := gocv.IMEncode(gocv.PNGFileExt, threshold)
 	if err != nil {
-		log.Println(err)
-		return "gocv.IMEncode error"
+		return "", err
 	}
 	defer buffer.Close()
 
 	if err := client.SetImageFromBytes(buffer.GetBytes()); err != nil {
-		log.Println(err)
-		return "client.SetImageFromBytes error"
+		return "", err
 	}
 
 	client.SetLanguage("WenQuanYiMicroHei", "ChromosomeHeavy", "DenneThreedee")
 	client.SetPageSegMode(gosseract.PSM_AUTO)
 
-	result, err := client.Text()
+	text, err := client.Text()
 	if err != nil {
-		log.Println(err)
-		return "client.Text error"
+		return "", err
 	}
 
-	return strings.ReplaceAll(result, " ", "")
+	text = strings.ReplaceAll(strings.ReplaceAll(text, "  ", " "), " ", "")
+
+	return text, nil
 }

@@ -2,14 +2,20 @@ package main
 
 import (
 	"cslv/internal/api"
-	"cslv/internal/generator"
+	"cslv/internal/generator/captcha"
 	"cslv/internal/service/image"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
+
+func init() {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+}
 
 func main() {
 	api := api.New(&api.Config{
@@ -17,11 +23,11 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		IdleTimeout:  10 * time.Second,
-	}, image.New(), generator.New())
+	}, image.New(), captcha.New())
 
 	go func() {
 		if err := api.ListenAndServe(); err != nil {
-			log.Fatal(err)
+			log.Fatal().Msg(err.Error())
 		}
 	}()
 	defer api.Shutdown()

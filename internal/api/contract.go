@@ -1,11 +1,11 @@
 package api
 
-import "github.com/mojocn/base64Captcha"
+import "cslv/internal/generator/captcha"
 
 type Service interface {
-	Solve(file []byte) string
+	Solve(file []byte) (string, error)
 }
 
 type Generator interface {
-	Image() (base64Captcha.Item, error)
+	Image() (captcha.Captcha, error)
 }
