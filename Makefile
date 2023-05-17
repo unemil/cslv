@@ -21,19 +21,13 @@ test:
 
 train:
 	cd training/tesstrain && \
-		for model in $(MODELS); do \
-			echo ; \
-			if [ "$$model" = "WenQuanYiMicroHei" ]; then \
-				TESSDATA_PREFIX=../tesseract/tessdata make training MODEL_NAME=$$model START_MODEL=eng TESSDATA=../tesseract/tessdata MAX_ITERATIONS=$(MAX_ITERATIONS_WENQUANYIMICROHEI) && \
-				cp data/WenQuanYiMicroHei.traineddata /usr/share/tesseract-ocr/4.00/tessdata/WenQuanYiMicroHei.traineddata; \
-			elif [ "$$model" = "DenneThreedee" ]; then \
-				TESSDATA_PREFIX=../tesseract/tessdata make training MODEL_NAME=$$model START_MODEL=eng TESSDATA=../tesseract/tessdata MAX_ITERATIONS=$(MAX_ITERATIONS_DENNETHREEDEE) && \
-				cp data/DenneThreedee.traineddata /usr/share/tesseract-ocr/4.00/tessdata/DenneThreedee.traineddata; \
-			elif [ "$$model" = "ChromosomeHeavy" ]; then \
-				TESSDATA_PREFIX=../tesseract/tessdata make training MODEL_NAME=$$model START_MODEL=eng TESSDATA=../tesseract/tessdata MAX_ITERATIONS=$(MAX_ITERATIONS_CHROMOSOMEHEAVY) && \
-				cp data/ChromosomeHeavy.traineddata /usr/share/tesseract-ocr/4.00/tessdata/ChromosomeHeavy.traineddata; \
-			else \
-				echo "Unknown model $$model"; \
-			fi; \
-			echo ; \
-		done
+		if [ "$(MODEL)" = "WenQuanYiMicroHei" ]; then \
+			TESSDATA_PREFIX=../tesseract/tessdata make training MODEL_NAME=$(MODEL) START_MODEL=eng TESSDATA=../tesseract/tessdata MAX_ITERATIONS=$(MAX_ITERATIONS_WENQUANYIMICROHEI); \
+			cp data/WenQuanYiMicroHei.traineddata /usr/share/tesseract-ocr/4.00/tessdata/WenQuanYiMicroHei.traineddata; \
+		elif [ "$(MODEL)" = "DenneThreedee" ]; then \
+			TESSDATA_PREFIX=../tesseract/tessdata make training MODEL_NAME=$(MODEL) START_MODEL=eng TESSDATA=../tesseract/tessdata MAX_ITERATIONS=$(MAX_ITERATIONS_DENNETHREEDEE); \
+			cp data/DenneThreedee.traineddata /usr/share/tesseract-ocr/4.00/tessdata/DenneThreedee.traineddata; \
+		elif [ "$(MODEL)" = "ChromosomeHeavy" ]; then \
+			TESSDATA_PREFIX=../tesseract/tessdata make training MODEL_NAME=$(MODEL) START_MODEL=eng TESSDATA=../tesseract/tessdata MAX_ITERATIONS=$(MAX_ITERATIONS_CHROMOSOMEHEAVY); \
+			cp data/ChromosomeHeavy.traineddata /usr/share/tesseract-ocr/4.00/tessdata/ChromosomeHeavy.traineddata; \
+		fi

@@ -66,7 +66,6 @@ func TestSolve(t *testing.T) {
 		buf := new(bytes.Buffer)
 
 		writer := multipart.NewWriter(buf)
-		defer writer.Close()
 
 		file, err := os.Open(tc.file)
 		if err != nil {
@@ -82,6 +81,8 @@ func TestSolve(t *testing.T) {
 		if _, err = io.Copy(formFile, file); err != nil {
 			t.Errorf("unexpected error: %s", err)
 		}
+
+		writer.Close()
 
 		tc.requestBody = buf.Bytes()
 
