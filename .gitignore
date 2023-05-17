@@ -1,6 +1,8 @@
 vendor
 templates/ui/node_modules
 
-training/tesseract
-training/tesstrain
-training/langdata
+training/tesseract/*
+!training/tesseract/tessdata
+
+training/tesstrain/*
+!training/tesstrain/data
