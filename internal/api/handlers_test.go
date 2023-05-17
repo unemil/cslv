@@ -64,7 +64,9 @@ func TestSolve(t *testing.T) {
 
 	for _, tc := range testCases {
 		buf := new(bytes.Buffer)
+
 		writer := multipart.NewWriter(buf)
+		defer writer.Close()
 
 		file, err := os.Open(tc.file)
 		if err != nil {
@@ -80,7 +82,6 @@ func TestSolve(t *testing.T) {
 		if _, err = io.Copy(formFile, file); err != nil {
 			t.Errorf("unexpected error: %s", err)
 		}
-		writer.Close()
 
 		tc.requestBody = buf.Bytes()
 
@@ -89,13 +90,13 @@ func TestSolve(t *testing.T) {
 			defer fasthttp.ReleaseRequest(req)
 
 			resp := fasthttp.AcquireResponse()
-			fasthttp.ReleaseResponse(resp)
+			defer fasthttp.ReleaseResponse(resp)
 
 			req.Header.SetHost(api.config.Host)
 			req.Header.SetMethod("POST")
 			req.SetRequestURI("/api/v1/captcha/solve")
 			req.Header.SetContentType(writer.FormDataContentType())
-			req.SetBody(buf.Bytes())
+			req.SetBody(tc.requestBody)
 
 			c := &fasthttp.Client{
 				Dial: func(addr string) (net.Conn, error) {

@@ -49,7 +49,6 @@ func (s *service) Solve(file []byte) (string, error) {
 	}
 
 	client.SetLanguage("WenQuanYiMicroHei", "ChromosomeHeavy", "DenneThreedee")
-	client.SetPageSegMode(gosseract.PSM_AUTO)
 
 	text, err := client.Text()
 	if err != nil {

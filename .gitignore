@@ -9,7 +9,7 @@ training/tesseract/tessdata/*
 training/tesstrain/*
 !training/tesstrain/data
 training/tesstrain/data/*
-!training/tesstrain/data/ChromosomeHeavy*
-!training/tesstrain/data/DenneThreedee*
-!training/tesstrain/data/WenQuanYiMicroHei*
+!training/tesstrain/data/ChromosomeHeavy-*
+!training/tesstrain/data/DenneThreedee-*
+!training/tesstrain/data/WenQuanYiMicroHei-*
 !training/tesstrain/data/*.traineddata
