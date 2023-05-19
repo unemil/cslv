@@ -13,8 +13,7 @@ type api struct {
 	router fasthttp.RequestHandler
 	config *Config
 
-	image   Service
-	captcha Generator
+	captcha Service
 }
 
 type Config struct {
@@ -24,24 +23,24 @@ type Config struct {
 	IdleTimeout  time.Duration
 }
 
-func New(config *Config, image Service, captcha Generator) *api {
+func New(config *Config, captcha Service) *api {
 	api := &api{
 		config:  config,
-		image:   image,
 		captcha: captcha,
 	}
 
 	r := router.New()
-
-	r.GET("/captcha", api.generate)
-
 	v1 := r.Group("/api/v1")
 	{
-		v1.POST("/captcha/solve", api.solve)
+		captcha := v1.Group("/captcha")
+		{
+			captcha.GET("/generate", api.generate)
+			captcha.POST("/solve", api.solve)
+			captcha.GET("/analyze", api.analyze)
+		}
 	}
 
 	r.ServeFiles("/{filepath:*}", "templates/ui/dist")
-
 	r.ServeFiles("/swagger/{filepath:*}", "templates/swagger-ui/dist")
 	r.ServeFiles("/docs/{filepath:*}", "templates/swagger-ui")
 

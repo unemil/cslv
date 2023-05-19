@@ -19,7 +19,7 @@ const CaptchaSolve = () => {
           'Content-Type': 'multipart/form-data',
         }
       })
-      .then(response => { setResult(response.data.text) })
+      .then(response => { setResult(response.data.solution) })
       .catch(error => { setResult(error.response.data.error) })
   }
 

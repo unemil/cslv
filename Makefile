@@ -1,8 +1,7 @@
-MODELS = WenQuanYiMicroHei DenneThreedee ChromosomeHeavy
+MODELS = WenQuanYiMicroHei DenneThreedee
 
-MAX_ITERATIONS_WENQUANYIMICROHEI = 500
-MAX_ITERATIONS_DENNETHREEDEE = 3000
-MAX_ITERATIONS_CHROMOSOMEHEAVY = 20000
+MAX_ITERATIONS_WENQUANYIMICROHEI = 1500
+MAX_ITERATIONS_DENNETHREEDEE = 10000
 
 build:
 	cd templates/ui && \
@@ -27,7 +26,4 @@ train:
 		elif [ "$(MODEL)" = "DenneThreedee" ]; then \
 			TESSDATA_PREFIX=../tesseract/tessdata make training MODEL_NAME=$(MODEL) START_MODEL=eng TESSDATA=../tesseract/tessdata MAX_ITERATIONS=$(MAX_ITERATIONS_DENNETHREEDEE); \
 			cp data/DenneThreedee.traineddata /usr/share/tesseract-ocr/4.00/tessdata/DenneThreedee.traineddata; \
-		elif [ "$(MODEL)" = "ChromosomeHeavy" ]; then \
-			TESSDATA_PREFIX=../tesseract/tessdata make training MODEL_NAME=$(MODEL) START_MODEL=eng TESSDATA=../tesseract/tessdata MAX_ITERATIONS=$(MAX_ITERATIONS_CHROMOSOMEHEAVY); \
-			cp data/ChromosomeHeavy.traineddata /usr/share/tesseract-ocr/4.00/tessdata/ChromosomeHeavy.traineddata; \
 		fi

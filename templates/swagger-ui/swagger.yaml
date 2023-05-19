@@ -21,7 +21,7 @@ paths:
           schema:
             type: object
             properties:
-              text:
+              solution:
                 type: string
         400:
           description: bad request
@@ -30,6 +30,63 @@ paths:
             properties:
               error:
                 type: string
+        500:
+          description: internal server error
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+      tags:
+        - /api/v1
+
+  /api/v1/captcha/generate:
+    get:
+      produces:
+        - image/png
+      responses:
+        200:
+          description: ok
+          schema: 
+            type: file
+        500:
+          description: internal server error
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+      tags:
+        - /api/v1
+  
+  /api/v1/captcha/analyze:
+    get:
+      produces:
+        - application/json
+      responses:
+        200:
+          description: ok
+          schema:
+            type: array
+            items:
+              properties:
+                accuracy:
+                  type: number
+                  format: float
+                analysis:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    image:
+                      type: string
+                    answer:
+                      type: string
+                    solution:
+                      type: string
+                    rate:
+                      type: number
+                      format: float
         500:
           description: internal server error
           schema:

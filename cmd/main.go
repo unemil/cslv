@@ -2,8 +2,7 @@ package main
 
 import (
 	"cslv/internal/api"
-	"cslv/internal/generator/captcha"
-	"cslv/internal/service/image"
+	"cslv/internal/service/captcha"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +14,7 @@ import (
 
 func init() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 }
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		IdleTimeout:  10 * time.Second,
-	}, image.New(), captcha.New())
+	}, captcha.New())
 
 	go func() {
 		if err := api.ListenAndServe(); err != nil {

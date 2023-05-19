@@ -1,6 +1,7 @@
 package api
 
 import (
+	"cslv/internal/model"
 	"encoding/json"
 
 	"github.com/mojocn/base64Captcha"
@@ -9,20 +10,22 @@ import (
 )
 
 type result struct {
-	Text  string `json:"text,omitempty"`
-	Error string `json:"error,omitempty"`
+	Solution string           `json:"solution,omitempty"` // solve
+	Error    string           `json:"error,omitempty"`    // solve, generate, analyze
+	Accuracy float32          `json:"accuracy,omitempty"` // analyze
+	Analysis []model.Analysis `json:"analysis,omitempty"` // analyze
 }
 
 func ok(ctx *fasthttp.RequestCtx, data any) {
 	switch data.(type) {
 	case string:
-		body, err := json.Marshal(result{Text: data.(string)})
+		body, err := json.Marshal(result{Solution: data.(string)})
 		if err != nil {
 			internalServerError(ctx, err)
 			return
 		}
 
-		log.Trace().Msg(string(body))
+		log.Debug().Msg(string(body))
 
 		if _, err := ctx.Write(body); err != nil {
 			internalServerError(ctx, err)
@@ -30,6 +33,19 @@ func ok(ctx *fasthttp.RequestCtx, data any) {
 		}
 	case base64Captcha.Item:
 		if _, err := data.(base64Captcha.Item).WriteTo(ctx); err != nil {
+			internalServerError(ctx, err)
+			return
+		}
+	case result:
+		body, err := json.MarshalIndent(data.(result), "", "\t")
+		if err != nil {
+			internalServerError(ctx, err)
+			return
+		}
+
+		log.Debug().Msg(string(body))
+
+		if _, err := ctx.Write(body); err != nil {
 			internalServerError(ctx, err)
 			return
 		}
@@ -47,7 +63,7 @@ func badRequest(ctx *fasthttp.RequestCtx, err error) {
 		return
 	}
 
-	log.Trace().Msg(string(body))
+	log.Debug().Msg(string(body))
 
 	if _, err := ctx.Write(body); err != nil {
 		internalServerError(ctx, err)
@@ -64,7 +80,7 @@ func internalServerError(ctx *fasthttp.RequestCtx, err error) {
 		return
 	}
 
-	log.Trace().Msg(string(body))
+	log.Debug().Msg(string(body))
 
 	if _, err := ctx.Write(body); err != nil {
 		internalServerError(ctx, err)

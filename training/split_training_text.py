@@ -4,7 +4,7 @@ import pathlib
 import subprocess
 
 training_text_file = 'langdata/eng.training_text'
-training_font = 'FONT_NAME'
+training_font = 'Denne Threedee'
 
 lines = []
 
@@ -12,14 +12,14 @@ with open(training_text_file, 'r') as input_file:
     for line in input_file.readlines():
         lines.append(line.strip())
 
-output_directory = 'tesstrain/data/MODEL_NAME-ground-truth'
+output_directory = 'tesstrain/data/DenneThreedee-ground-truth'
 
 if not os.path.exists(output_directory):
     os.mkdir(output_directory)
 
 random.shuffle(lines)
 
-count = 100
+count = 200
 
 lines = lines[:count]
 

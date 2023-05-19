@@ -1,11 +1,12 @@
 package api
 
-import "cslv/internal/generator/captcha"
+import (
+	"context"
+	"cslv/internal/model"
+)
 
 type Service interface {
+	Generate() (model.Captcha, error)
 	Solve(file []byte) (string, error)
-}
-
-type Generator interface {
-	Image() (captcha.Captcha, error)
+	Analyze(ctx context.Context, count int) ([]model.Analysis, float32, error)
 }

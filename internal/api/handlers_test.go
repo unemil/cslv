@@ -2,8 +2,7 @@ package api
 
 import (
 	"bytes"
-	"cslv/internal/generator/captcha"
-	"cslv/internal/service/image"
+	"cslv/internal/service/captcha"
 	"io"
 	"mime/multipart"
 	"net"
@@ -22,7 +21,7 @@ func TestSolve(t *testing.T) {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		IdleTimeout:  10 * time.Second,
-	}, image.New(), captcha.New())
+	}, captcha.New())
 
 	testCases := []struct {
 		name               string
@@ -36,7 +35,7 @@ func TestSolve(t *testing.T) {
 			file:               "../../tests/captcha.png",
 			requestBody:        nil,
 			expectedStatusCode: fasthttp.StatusOK,
-			expectedResponse:   `{"text": "qtjed"}`,
+			expectedResponse:   `{"solution": "ggkmp"}`,
 		},
 		{
 			name:               "InvalidRequest",
