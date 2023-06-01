@@ -92,8 +92,7 @@ func (s *service) Solve(file []byte) (string, error) {
 		return "", err
 	}
 
-	text = regexp.MustCompile("[[:^ascii:]]").ReplaceAllLiteralString(text, "")
-	text = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(text, "\n", ""), "  ", " "), " ", "")
+	text = regexp.MustCompile(`[^a-zA-Z0-9]+`).ReplaceAllString(text, "")
 	text = strings.ToLower(text)
 
 	return text, nil

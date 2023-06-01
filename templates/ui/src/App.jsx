@@ -5,10 +5,13 @@ import './App.css'
 
 const CaptchaSolve = () => {
   const [result, setResult] = useState('')
+  const [imageURL, setImageURL] = useState('')
 
   const sendData = async (file) => {
     const formData = new FormData()
     formData.append('file', file)
+
+    setImageURL(URL.createObjectURL(file))
 
     await axios
       .request({
@@ -35,8 +38,9 @@ const CaptchaSolve = () => {
       <h1>cslv</h1>
       <div id='dropzone' {...getRootProps()}>
         <input {...getInputProps()} />
-        <p>Drag and drop file here, or click to select file</p>
+        <p>Перетащите файл сюда или нажмите, чтобы выбрать файл</p>
       </div>
+      {imageURL && <img src={imageURL}></img>}
       <h2>{result}</h2>
     </>
   )
