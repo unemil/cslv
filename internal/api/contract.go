@@ -8,5 +8,5 @@ import (
 type Service interface {
 	Generate() (model.Captcha, error)
 	Solve(file []byte) (string, error)
-	Analyze(ctx context.Context, count int) ([]model.Analysis, float32, error)
+	Analyze(ctx context.Context, info []model.AnalyzeInfo) ([]model.Analysis, float32, error)
 }

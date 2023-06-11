@@ -1,8 +1,13 @@
 package api
 
 import (
+	"bytes"
+	"cslv/internal/model"
 	"errors"
 	"io"
+	"io/ioutil"
+	"path/filepath"
+	"regexp"
 
 	"github.com/h2non/filetype"
 	"github.com/valyala/fasthttp"
@@ -11,6 +16,11 @@ import (
 func (api *api) generate(ctx *fasthttp.RequestCtx) {
 	image, err := api.captcha.Generate()
 	if err != nil {
+		internalServerError(ctx, err)
+		return
+	}
+
+	if err := saveInfo(image); err != nil {
 		internalServerError(ctx, err)
 		return
 	}
@@ -53,13 +63,41 @@ func (api *api) solve(ctx *fasthttp.RequestCtx) {
 }
 
 func (api *api) analyze(ctx *fasthttp.RequestCtx) {
-	count, err := ctx.QueryArgs().GetUint("count")
+	matches, err := filepath.Glob("captchas/*.png")
 	if err != nil {
-		badRequest(ctx, errors.New("count is not string!"))
+		internalServerError(ctx, err)
 		return
 	}
 
-	analysis, accuracy, err := api.captcha.Analyze(ctx, count)
+	re := regexp.MustCompile(`^(.*/)?(?:$|(.+?)(?:(\.[^.]*$)|$))`)
+
+	info := make([]model.AnalyzeInfo, 0, len(matches))
+	for _, match := range matches {
+		data, err := getInfo(re.FindStringSubmatch(match)[2])
+		if err != nil {
+			internalServerError(ctx, err)
+			return
+		}
+
+		image, err := ioutil.ReadFile(match)
+		if err != nil {
+			internalServerError(ctx, err)
+			return
+		}
+
+		buf := new(bytes.Buffer)
+		if _, err := buf.Write(image); err != nil {
+			internalServerError(ctx, err)
+			return
+		}
+
+		info = append(info, model.AnalyzeInfo{
+			Image: image,
+			Data:  data,
+		})
+	}
+
+	analysis, accuracy, err := api.captcha.Analyze(ctx, info)
 	if err != nil {
 		internalServerError(ctx, err)
 		return

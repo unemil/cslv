@@ -3,6 +3,9 @@ package api
 import (
 	"cslv/internal/model"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/mojocn/base64Captcha"
 	"github.com/rs/zerolog/log"
@@ -88,4 +91,47 @@ func internalServerError(ctx *fasthttp.RequestCtx, err error) {
 	}
 
 	ctx.SetStatusCode(fasthttp.StatusInternalServerError)
+}
+
+func saveInfo(image model.Captcha) error {
+	data, err := json.MarshalIndent(image, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	if err := ioutil.WriteFile(fmt.Sprintf("captchas/%s.json", image.ID), data, 0644); err != nil {
+		return err
+	}
+
+	file, err := os.Create(fmt.Sprintf("captchas/%s.png", image.ID))
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if _, err := image.Item.WriteTo(file); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func getInfo(id string) (model.Captcha, error) {
+	file, err := os.Open(fmt.Sprintf("captchas/%s.json", id))
+	if err != nil {
+		return model.Captcha{}, err
+	}
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return model.Captcha{}, err
+	}
+
+	var info model.Captcha
+	if err := json.Unmarshal(data, &info); err != nil {
+		return model.Captcha{}, err
+	}
+
+	return info, nil
 }
